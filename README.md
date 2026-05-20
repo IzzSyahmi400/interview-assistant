@@ -121,10 +121,7 @@ interview-assistant/
 
 - `.env` is listed in `.gitignore` and will **never be committed**
 - Your API key lives only on your local machine
-- `context.txt` (your personal info) **is committed** — remove it from git if you prefer to keep it private:
-  ```bash
-  echo context.txt >> .gitignore
-  ```
+
 
 ---
 
