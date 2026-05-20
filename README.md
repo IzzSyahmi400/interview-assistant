@@ -21,7 +21,7 @@ A real-time AI interview assistant that runs as a transparent overlay on your Wi
 - AI answers powered by Claude (Anthropic)
 - Transparent, always-on-top overlay — invisible to screen share
 - Personalised answers based on your own CV and background via `context.txt`
-- Auto-clears after 30 seconds
+- Auto-clears after 90 seconds
 
 ---
 
