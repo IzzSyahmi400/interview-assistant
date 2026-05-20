@@ -1,0 +1,47 @@
+Name: Izz Syahmi
+
+Role: Junior Web Designer / Front-End Developer
+
+Experience: Beginner to junior-level experience in web development and UI/UX design, specializing in PHP, HTML, CSS, JavaScript, MySQL, and responsive interface design.
+
+Current Company: Internship / Preparing for Web Designer Internship (starting August 2025)
+
+Skills:
+
+HTML, CSS, JavaScript
+PHP & MySQL
+WordPress
+UI/UX Design
+Responsive Web Design
+Android Studio (Beginner)
+WebSocket Messaging Systems
+Basic Graphic & Layout Design
+
+Education:
+Diploma in IT / Computer Science (ongoing or recent graduate)
+
+Strengths:
+
+Fast learner and highly adaptable
+Creative with strong visual/design sense
+Able to work independently and solve problems step-by-step
+Good attention to UI consistency and user experience
+
+Weaknesses:
+I tend to overthink and spend extra time refining details, but I’ve been improving by setting clearer deadlines and priorities.
+
+Notable Projects:
+
+BundleMart Messaging System: Built a messaging interface using HTML, CSS, JavaScript, PHP, MySQL, and WebSockets.
+Boucake E-Commerce UI: Designed and refined a floral-themed shopping interface with consistent branding and cart functionality.
+Travel & Navigation App Redesign: Worked on improving UI/UX for local commuters and tourists as part of an HCI-related project.
+Attendance Tracker App: Learning and developing an Android attendance system using Android Studio and XML.
+
+Target Role:
+Web Designer / Front-End Developer / Junior Web Developer
+
+Salary Expectation:
+RM2,500 – RM3,500 (depending on role, responsibilities, and growth opportunities)
+
+Why This Role:
+I enjoy combining creativity with technology to build interfaces that are both functional and visually appealing. I’m looking for a role where I can continue improving my technical skills while contributing fresh ideas and strong design-focused thinking.

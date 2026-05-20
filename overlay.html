@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Assistant</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 8px;
+      pointer-events: none;
+    }
+
+    #answer-card {
+      display: none;
+      background: rgba(0, 0, 0, 0.82);
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 14px 16px;
+      border-radius: 12px;
+      width: 100%;
+      max-height: 370px;
+      overflow-y: auto;
+      animation: fadeIn 0.25s ease forwards;
+      pointer-events: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.2) transparent;
+    }
+
+    #answer-card::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #answer-card::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #answer-card::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    #answer-card.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #answer-card ul {
+      padding-left: 18px;
+      margin-top: 4px;
+    }
+
+    #answer-card li {
+      margin-bottom: 4px;
+    }
+
+    #answer-card p {
+      margin-bottom: 6px;
+    }
+
+    #answer-card p:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="answer-card"></div>
+
+  <script>
+    let clearTimer = null;
+
+    window.electronAPI.onAnswer((text) => {
+      const card = document.getElementById('answer-card');
+
+      card.classList.remove('visible');
+      void card.offsetWidth;
+
+      card.innerHTML = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^[-•]\s(.+)/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+        .replace(/\n{2,}/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+
+      card.classList.add('visible');
+      card.scrollTop = 0;
+
+      if (clearTimer) clearTimeout(clearTimer);
+      clearTimer = setTimeout(() => {
+        card.classList.remove('visible');
+        clearTimer = null;
+      }, 90000);
+    });
+  </script>
+</body>
+</html>

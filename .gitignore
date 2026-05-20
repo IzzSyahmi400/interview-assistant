@@ -1,0 +1,14 @@
+# Environment — NEVER commit the real .env
+.env
+
+# Audio temp file
+temp_audio.wav
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

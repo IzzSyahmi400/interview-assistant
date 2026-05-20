@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: rgba(18, 18, 18, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      height: 72px;
+      overflow: hidden;
+      -webkit-app-region: drag;
+    }
+
+    .icon {
+      font-size: 17px;
+      margin-right: 10px;
+      opacity: 0.5;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    #question-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-app-region: no-drag;
+      caret-color: #ffffff;
+    }
+
+    #question-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.2);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      white-space: nowrap;
+      margin-left: 10px;
+      flex-shrink: 0;
+      -webkit-app-region: no-drag;
+    }
+  </style>
+</head>
+<body>
+  <span class="icon">💬</span>
+  <input
+    id="question-input"
+    type="text"
+    placeholder="Type the interview question and press Enter..."
+    autocomplete="off"
+    spellcheck="false"
+  />
+  <span class="hint">Esc to close</span>
+
+  <script>
+    const input = document.getElementById('question-input');
+
+    window.addEventListener('focus', () => input.focus());
+    document.addEventListener('DOMContentLoaded', () => input.focus());
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && input.value.trim()) {
+        window.inputAPI.submit(input.value.trim());
+        input.value = '';
+      } else if (e.key === 'Escape') {
+        input.value = '';
+        window.inputAPI.close();
+      }
+    });
+  </script>
+</body>
+</html>
