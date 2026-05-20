@@ -71,7 +71,44 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here
 
 ### 5. Fill in your personal context
 
-Open `context.txt` and replace the placeholder values with your real information (name, skills, experience, projects, etc.). This is what the AI uses to answer interview questions as you.
+Create a `context.txt` file in the project root. This file is gitignored — it stays on your machine only. Fill it with your real information so the AI can answer as you:
+
+```
+Name: Your Full Name
+
+Role: Your Job Title / Target Role
+
+Experience: X years in [field], specializing in [specialization]
+
+Current Company: Company Name
+
+Skills:
+skill1, skill2, skill3
+
+Education:
+Degree, Institution, Year
+
+Strengths:
+- Fast learner and highly adaptable
+- Strong attention to detail
+- ...
+
+Weaknesses:
+I tend to [honest weakness framed positively, e.g. "over-prepare, but I've learned to timeblock"]
+
+Notable Projects:
+- Project 1: one-line description
+- Project 2: one-line description
+
+Target Role:
+What kind of job you are interviewing for
+
+Salary Expectation:
+Your expected range
+
+Why This Role:
+One or two sentences about your motivation
+```
 
 ---
 
@@ -120,8 +157,8 @@ interview-assistant/
 ## Security
 
 - `.env` is listed in `.gitignore` and will **never be committed**
-- Your API key lives only on your local machine
-
+- `context.txt` is listed in `.gitignore` and will **never be committed** — your personal info stays on your machine only
+- Your API key and personal details live only on your local machine
 
 ---
 

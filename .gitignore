@@ -1,6 +1,9 @@
 # Environment — NEVER commit the real .env
 .env
 
+# Personal info — keep this private
+context.txt
+
 # Audio temp file
 temp_audio.wav
 
