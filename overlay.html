@@ -17,93 +17,184 @@
       pointer-events: none;
     }
 
-    #answer-card {
+    #root { width: 100%; }
+
+    .card {
       display: none;
-      background: rgba(0, 0, 0, 0.82);
-      color: #ffffff;
-      font-size: 13px;
-      line-height: 1.6;
-      padding: 14px 16px;
       border-radius: 12px;
+      padding: 12px 14px;
       width: 100%;
-      max-height: 370px;
-      overflow-y: auto;
-      animation: fadeIn 0.25s ease forwards;
       pointer-events: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.2) transparent;
+      animation: fadeIn 0.2s ease forwards;
     }
 
-    #answer-card::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    #answer-card::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    #answer-card::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 2px;
-    }
-
-    #answer-card.visible {
-      display: block;
-    }
+    .card.visible { display: block; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    #answer-card ul {
-      padding-left: 18px;
-      margin-top: 4px;
-    }
-
-    #answer-card li {
-      margin-bottom: 4px;
-    }
-
-    #answer-card p {
+    /* ── Transcript card (shown while recording) ── */
+    #transcript-card {
+      background: rgba(0, 0, 0, 0.68);
+      max-height: 110px;
+      overflow: hidden;
       margin-bottom: 6px;
     }
 
-    #answer-card p:last-child {
-      margin-bottom: 0;
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      color: #ff5f57;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      margin-bottom: 5px;
+    }
+
+    #transcript-text {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 12px;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* ── Answer card (shown while Claude streams) ── */
+    #answer-card {
+      background: rgba(0, 0, 0, 0.85);
+      max-height: 370px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.2) transparent;
+    }
+
+    #answer-card::-webkit-scrollbar { width: 4px; }
+    #answer-card::-webkit-scrollbar-track { background: transparent; }
+    #answer-card::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+    }
+
+    #answer-text {
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    #answer-text ul { padding-left: 18px; margin-top: 4px; white-space: normal; }
+    #answer-text li { margin-bottom: 4px; }
+    #answer-text p  { margin-bottom: 6px; }
+    #answer-text p:last-child { margin-bottom: 0; }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 13px;
+      background: rgba(255, 255, 255, 0.65);
+      margin-left: 1px;
+      vertical-align: middle;
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <div id="answer-card"></div>
+  <div id="root">
+    <div id="transcript-card" class="card">
+      <div class="badge">&#9679; LISTENING</div>
+      <div id="transcript-text"></div>
+    </div>
+    <div id="answer-card" class="card">
+      <div id="answer-text"></div>
+    </div>
+  </div>
 
   <script>
-    let clearTimer = null;
+    const transcriptCard = document.getElementById('transcript-card');
+    const answerCard     = document.getElementById('answer-card');
+    const transcriptText = document.getElementById('transcript-text');
+    const answerText     = document.getElementById('answer-text');
 
+    let rawAnswer = '';
+
+    function escapeHtml(s) {
+      return s
+        .replace(/&/g,  '&amp;')
+        .replace(/</g,  '&lt;')
+        .replace(/>/g,  '&gt;');
+    }
+
+    function renderMarkdown(raw) {
+      const lines = raw.split('\n');
+      let html = '';
+      let inList = false;
+
+      for (const line of lines) {
+        const bullet = line.match(/^[-•]\s(.+)/);
+        if (bullet) {
+          if (!inList) { html += '<ul>'; inList = true; }
+          html += `<li>${escapeHtml(bullet[1]).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</li>`;
+        } else {
+          if (inList) { html += '</ul>'; inList = false; }
+          const escaped = escapeHtml(line).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          if (escaped.trim()) html += `<p>${escaped}</p>`;
+        }
+      }
+      if (inList) html += '</ul>';
+      return html;
+    }
+
+    // Live transcript while recording
+    window.electronAPI.onTranscript((text) => {
+      if (!text) {
+        transcriptCard.classList.remove('visible');
+        return;
+      }
+      transcriptText.textContent = text;
+      transcriptCard.classList.add('visible');
+    });
+
+    // Claude starts streaming — switch to answer mode
+    window.electronAPI.onStreamStart(() => {
+      transcriptCard.classList.remove('visible');
+      rawAnswer = '';
+      answerText.innerHTML = '<span class="cursor"></span>';
+      answerCard.classList.add('visible');
+      answerCard.scrollTop = 0;
+    });
+
+    // Each token arrives
+    window.electronAPI.onStreamChunk((text) => {
+      rawAnswer += text;
+      answerText.innerHTML = escapeHtml(rawAnswer) + '<span class="cursor"></span>';
+      answerCard.scrollTop = answerCard.scrollHeight;
+    });
+
+    // Streaming complete — apply markdown formatting
+    window.electronAPI.onStreamDone(() => {
+      answerText.innerHTML = renderMarkdown(rawAnswer);
+    });
+
+    // Auto-hide after timeout
+    window.electronAPI.onStreamHide(() => {
+      answerCard.classList.remove('visible');
+      transcriptCard.classList.remove('visible');
+      rawAnswer = '';
+    });
+
+    // Fallback: legacy show-answer channel
     window.electronAPI.onAnswer((text) => {
-      const card = document.getElementById('answer-card');
-
-      card.classList.remove('visible');
-      void card.offsetWidth;
-
-      card.innerHTML = text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/^[-•]\s(.+)/gm, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-        .replace(/\n{2,}/g, '</p><p>')
-        .replace(/\n/g, '<br>');
-
-      card.classList.add('visible');
-      card.scrollTop = 0;
-
-      if (clearTimer) clearTimeout(clearTimer);
-      clearTimer = setTimeout(() => {
-        card.classList.remove('visible');
-        clearTimer = null;
-      }, 90000);
+      transcriptCard.classList.remove('visible');
+      rawAnswer = text;
+      answerText.innerHTML = renderMarkdown(text);
+      answerCard.classList.add('visible');
+      answerCard.scrollTop = 0;
     });
   </script>
 </body>
